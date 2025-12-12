@@ -1,4 +1,4 @@
-/* App.css - Layout Flex Frame & Touch Action Fix */
+/* App.css - FIX SCROLL: touch-action: pan-y */
 
 :root {
   --primary-color: #fe2c55;
@@ -10,7 +10,7 @@
 }
 
 html {
-  height: -webkit-fill-available; /* Fix Safari */
+  height: -webkit-fill-available;
   overflow: hidden;
 }
 
@@ -27,7 +27,7 @@ body {
   /* BLOQUEO DE SELECCIÓN GLOBAL */
   -webkit-user-select: none;
   user-select: none;
-  -webkit-touch-callout: none; /* Evita menú contextual en iOS */
+  -webkit-touch-callout: none;
 }
 
 #root {
@@ -39,7 +39,7 @@ body {
 .app-container {
   width: 100%; max-width: 480px;
   margin: 0 auto;
-  flex: 1; /* Flex Frame */
+  flex: 1; 
   display: flex; flex-direction: column;
   position: relative;
   background: #000;
@@ -53,7 +53,7 @@ body {
 
 .video-scroll-container {
   flex: 1; width: 100%; height: 100%;
-  overflow-y: scroll;
+  overflow-y: scroll; /* ESTO ES LO QUE PERMITE EL SCROLL */
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scroll-snap-stop: always;
@@ -67,14 +67,16 @@ body {
   scroll-snap-align: start; scroll-snap-stop: always;
   position: relative; background-color: #000; overflow: hidden;
   
-  /* MAGIA PARA EL HOLD: Esto evita que el navegador capture el gesto */
-  touch-action: none; 
+  /* --- CORRECCIÓN CRÍTICA AQUÍ --- */
+  /* Antes era 'none', lo que mataba el scroll. */
+  /* Ahora es 'pan-y', que permite mover arriba/abajo pero bloquea lo demás */
+  touch-action: pan-y; 
 }
 
 .video-player { 
   width: 100%; height: 100%; 
   object-fit: cover; display: block; 
-  pointer-events: auto; /* Necesario para recibir gestos */
+  pointer-events: auto; 
 }
 
 /* UI SUPERIOR */
@@ -93,7 +95,7 @@ body {
   position: absolute; right: 10px;
   bottom: calc(140px + env(safe-area-inset-bottom));
   display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 50;
-  pointer-events: none; /* El contenedor no bloquea, los hijos sí */
+  pointer-events: none; 
 }
 .sidebar-item { display: flex; flex-direction: column; align-items: center; text-align: center; pointer-events: auto; }
 .profile-pic-container { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--primary-color); overflow: hidden; margin-bottom: 8px; background-color: #333; }
@@ -102,7 +104,7 @@ body {
 .sidebar-btn {
   background: none; border: none; color: white; font-size: 26px; padding: 0; cursor: pointer;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); 
-  pointer-events: auto; /* Botones vivos */
+  pointer-events: auto; 
   transition: transform 0.1s;
 }
 .sidebar-btn:active { transform: scale(0.9); }
@@ -142,12 +144,12 @@ body {
   position: absolute; left: 0; width: 100%; height: 4px;
   background: rgba(255,255,255,0.2); cursor: pointer; z-index: 100;
   bottom: max(10px, env(safe-area-inset-bottom));
-  touch-action: none; /* Importante para el scrub */
+  touch-action: none; /* Aquí SÍ queremos none para que el arrastre sea fluido */
 }
 .progress-container:hover { height: 8px; }
 .progress-bar { height: 100%; background: #fff; width: 0%; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
 
-/* RESTO DE UI (Modales, etc.) - Sin cambios estructurales */
+/* UI GENÉRICA */
 .start-screen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 500; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 .big-profile-container { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary-color); margin-bottom: 20px; overflow: hidden; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
 .big-profile-container img { width: 100%; height: 100%; object-fit: cover; }
@@ -161,7 +163,14 @@ body {
 .btn-confirm { background: var(--primary-color); color: white; }
 .btn-cancel { background: #333; color: white; }
 
-.comments-sheet-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background-color: #121212; z-index: 300; border-top-left-radius: 15px; border-top-right-radius: 15px; transform: translateY(100%); transition: transform 0.3s; display: flex; flex-direction: column; max-height: 80vh; }
+.comments-sheet-container { 
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; 
+  background-color: #121212; z-index: 300; 
+  border-top-left-radius: 15px; border-top-right-radius: 15px; 
+  transform: translateY(100%); transition: transform 0.3s; 
+  display: flex; flex-direction: column; 
+  max-height: 80vh; 
+}
 .comments-sheet-container.open { transform: translateY(0); }
 .sheet-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 299; }
 .sheet-handle { width: 40px; height: 4px; background-color: #444; border-radius: 2px; margin: 10px auto; flex-shrink: 0; }
